@@ -3,7 +3,12 @@ from sqlalchemy.orm import Session
 from app.models.user import User
 from app.database import Base, engine, get_db
 from app.schemas.user import UserCreate, UserResponse, UserLogin
-from app.auth.security import hash_password, verify_password, create_access_token
+from app.auth.security import (
+    hash_password,
+    verify_password,
+    create_access_token,
+    get_current_user
+)
 app = FastAPI(
     title="TruthLens API",
     description="AI-powered scam and suspicious content analyzer",
@@ -67,4 +72,10 @@ def login(user: UserLogin, db: Session = Depends(get_db)):
     return {
         "access_token": access_token,
         "token_type": "bearer"
+    }
+
+@app.get("/me")
+def get_me(current_user_id: str = Depends(get_current_user)):
+    return {
+        "user_id": current_user_id
     }
